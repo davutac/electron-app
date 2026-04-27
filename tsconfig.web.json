@@ -12,6 +12,7 @@
     "baseUrl": ".",
     "ignoreDeprecations": "6.0",
     "paths": {
+      "@/*": ["src/renderer/src/*"],
       "@renderer/*": ["src/renderer/src/*"]
     },
     "strictNullChecks": true

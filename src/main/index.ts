@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, shell } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
@@ -7,9 +7,19 @@ const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     autoHideMenuBar: true,
+    backgroundColor: "#121212",
     height: 670,
+    minHeight: 560,
+    minWidth: 860,
     ...(process.platform === "linux" ? { icon } : {}),
     show: false,
+    title: "Electron App",
+    titleBarOverlay: {
+      color: "#ffffff00",
+      height: 44,
+      symbolColor: "#f5f5f5",
+    },
+    titleBarStyle: "hidden",
     webPreferences: {
       preload: join(import.meta.dirname, "../preload/index.mjs"),
       sandbox: false,
@@ -50,9 +60,6 @@ void (async (): Promise<void> => {
   app.on("browser-window-created", (_, window) => {
     optimizer.watchWindowShortcuts(window);
   });
-
-  // IPC test
-  ipcMain.on("ping", () => console.log("pong"));
 
   createWindow();
 
