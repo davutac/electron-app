@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 
-type UpdateStatus = Awaited<ReturnType<typeof window.api.updates.getStatus>>;
+type UpdateApi = Window["api"]["updates"];
+type UpdateStatus = Awaited<ReturnType<UpdateApi["getStatus"]>>;
 
 const MIN_PROGRESS = 0;
 const MAX_PROGRESS = 100;
@@ -12,13 +13,14 @@ const clampProgress = (percent: number): number =>
   Math.min(MAX_PROGRESS, Math.max(MIN_PROGRESS, percent));
 
 const TitlebarUpdateButton = (): React.JSX.Element | null => {
+  const updateApi = window.api.updates;
   const [status, setStatus] = useState<UpdateStatus>({ state: "idle" });
 
   useEffect(() => {
     let isMounted = true;
 
     const loadStatus = async (): Promise<void> => {
-      const currentStatus = await window.api.updates.getStatus();
+      const currentStatus = await updateApi.getStatus();
 
       if (isMounted) {
         setStatus(currentStatus);
@@ -27,7 +29,7 @@ const TitlebarUpdateButton = (): React.JSX.Element | null => {
 
     void loadStatus();
 
-    const unsubscribe = window.api.updates.onStatusChange((nextStatus) => {
+    const unsubscribe = updateApi.onStatusChange((nextStatus) => {
       setStatus(nextStatus);
     });
 
@@ -35,7 +37,7 @@ const TitlebarUpdateButton = (): React.JSX.Element | null => {
       isMounted = false;
       unsubscribe();
     };
-  }, []);
+  }, [updateApi]);
 
   if (status.state === "idle") {
     return null;
@@ -63,7 +65,7 @@ const TitlebarUpdateButton = (): React.JSX.Element | null => {
     <Button
       className="app-titlebar-interactive"
       onClick={() => {
-        void window.api.updates.install();
+        void updateApi.install();
       }}
       size="sm"
       type="button"
