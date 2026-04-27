@@ -3,6 +3,7 @@ import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell } from "electron";
 import icon from "../../resources/icon.png?asset";
 import { APP_NAME } from "@/constants";
+import { initializeAutoUpdates } from "./updater";
 import { MIN_WINDOW_SIZE, readWindowState, writeWindowState } from "./window-state";
 
 const TITLEBAR_HEIGHT = 34;
@@ -45,6 +46,8 @@ const createWindow = (): void => {
   if (isMaximized === true) {
     mainWindow.maximize();
   }
+
+  initializeAutoUpdates(mainWindow);
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
