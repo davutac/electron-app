@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import type { LucideProps } from "lucide-react";
+import { NavLink, useLocation } from "react-router";
 
 import {
   Sidebar,
@@ -25,15 +26,20 @@ import {
 
 interface SidebarItem {
   icon: ForwardRefExoticComponent<Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>>;
-  isActive?: boolean;
   title: string;
+}
+
+interface SidebarRouteItem extends SidebarItem {
+  end?: boolean;
+  to: string;
 }
 
 const primaryItems = [
   {
+    end: true,
     icon: LayoutDashboardIcon,
-    isActive: true,
     title: "Dashboard",
+    to: "/",
   },
   {
     icon: InboxIcon,
@@ -47,7 +53,7 @@ const primaryItems = [
     icon: ArchiveIcon,
     title: "Archive",
   },
-] satisfies SidebarItem[];
+] satisfies (SidebarItem | SidebarRouteItem)[];
 
 const workspaceItems = [
   {
@@ -63,54 +69,72 @@ const workspaceItems = [
 const settingsItem = {
   icon: SettingsIcon,
   title: "Settings",
-} satisfies SidebarItem;
+  to: "/settings",
+} satisfies SidebarRouteItem;
 
-const AppSidebar = (): React.JSX.Element => (
-  <Sidebar className="app-sidebar" collapsible="icon">
-    <SidebarContent className="pt-1.5">
-      <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {primaryItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton isActive={item.isActive} tooltip={item.title}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-      <SidebarGroup>
-        <SidebarGroupLabel>Workspace</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {workspaceItems.map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton tooltip={item.title}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
-    </SidebarContent>
-    <SidebarFooter>
-      <SidebarMenu>
-        <SidebarMenuItem>
-          <SidebarMenuButton tooltip={settingsItem.title}>
-            <settingsItem.icon />
-            <span>{settingsItem.title}</span>
-          </SidebarMenuButton>
-        </SidebarMenuItem>
-      </SidebarMenu>
-    </SidebarFooter>
-    <SidebarRail />
-  </Sidebar>
-);
+const isRouteItem = (item: SidebarItem | SidebarRouteItem): item is SidebarRouteItem =>
+  "to" in item;
+
+const AppSidebar = (): React.JSX.Element => {
+  const { pathname } = useLocation();
+  const isActive = (item: SidebarRouteItem) =>
+    item.end ? pathname === item.to : pathname.startsWith(item.to);
+
+  return (
+    <Sidebar className="app-sidebar" collapsible="icon">
+      <SidebarContent className="pt-1.5">
+        <SidebarGroup>
+          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {primaryItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton
+                    isActive={isRouteItem(item) ? isActive(item) : false}
+                    render={isRouteItem(item) ? <NavLink end={item.end} to={item.to} /> : undefined}
+                    tooltip={item.title}
+                  >
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Workspace</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {workspaceItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton tooltip={item.title}>
+                    <item.icon />
+                    <span>{item.title}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              isActive={isActive(settingsItem)}
+              render={<NavLink to={settingsItem.to} />}
+              tooltip={settingsItem.title}
+            >
+              <settingsItem.icon />
+              <span>{settingsItem.title}</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
+};
 
 export default AppSidebar;
