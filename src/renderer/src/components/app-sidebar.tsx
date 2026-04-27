@@ -7,10 +7,13 @@ import {
   LayoutDashboardIcon,
   SettingsIcon,
 } from "lucide-react";
-import { Link, useRouterState } from "@tanstack/react-router";
+import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
+import type { RegisterableHotkey } from "@tanstack/react-hotkeys";
+import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import type { LucideProps } from "lucide-react";
 
+import { Kbd } from "@/components/ui/kbd";
 import {
   Sidebar,
   SidebarContent,
@@ -33,6 +36,7 @@ type AppRoutePath = "/" | "/settings";
 
 interface SidebarRouteItem extends SidebarItem {
   end?: boolean;
+  shortcut: RegisterableHotkey;
   to: AppRoutePath;
 }
 
@@ -40,6 +44,7 @@ const primaryItems = [
   {
     end: true,
     icon: LayoutDashboardIcon,
+    shortcut: "Mod+1",
     title: "Dashboard",
     to: "/",
   },
@@ -70,12 +75,50 @@ const workspaceItems = [
 
 const settingsItem = {
   icon: SettingsIcon,
+  shortcut: "Mod+,",
   title: "Settings",
   to: "/settings",
 } satisfies SidebarRouteItem;
 
 const isRouteItem = (item: SidebarItem | SidebarRouteItem): item is SidebarRouteItem =>
   "to" in item;
+
+interface SidebarRouteMenuItemProps {
+  isActive: boolean;
+  item: SidebarRouteItem;
+}
+
+const SidebarRouteMenuItem = ({ isActive, item }: SidebarRouteMenuItemProps): React.JSX.Element => {
+  const navigate = useNavigate();
+  const shortcutLabel = formatForDisplay(item.shortcut);
+
+  useHotkey(item.shortcut, () => {
+    void navigate({ to: item.to });
+  });
+
+  return (
+    <SidebarMenuItem>
+      <SidebarMenuButton
+        isActive={isActive}
+        render={<Link to={item.to} />}
+        tooltip={{
+          children: (
+            <>
+              <span>{item.title}</span>
+              <Kbd>{shortcutLabel}</Kbd>
+            </>
+          ),
+        }}
+      >
+        <item.icon />
+        <span>{item.title}</span>
+        <Kbd className="ml-auto opacity-0 transition-opacity group-focus-within/menu-button:opacity-100 group-hover/menu-button:opacity-100 group-data-[collapsible=icon]:hidden">
+          {shortcutLabel}
+        </Kbd>
+      </SidebarMenuButton>
+    </SidebarMenuItem>
+  );
+};
 
 const AppSidebar = (): React.JSX.Element => {
   const pathname = useRouterState({
@@ -91,18 +134,18 @@ const AppSidebar = (): React.JSX.Element => {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {primaryItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    isActive={isRouteItem(item) ? isActive(item) : false}
-                    render={isRouteItem(item) ? <Link to={item.to} /> : undefined}
-                    tooltip={item.title}
-                  >
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {primaryItems.map((item) =>
+                isRouteItem(item) ? (
+                  <SidebarRouteMenuItem isActive={isActive(item)} item={item} key={item.title} />
+                ) : (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton tooltip={item.title}>
+                      <item.icon />
+                      <span>{item.title}</span>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ),
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -124,16 +167,7 @@ const AppSidebar = (): React.JSX.Element => {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              isActive={isActive(settingsItem)}
-              render={<Link to={settingsItem.to} />}
-              tooltip={settingsItem.title}
-            >
-              <settingsItem.icon />
-              <span>{settingsItem.title}</span>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          <SidebarRouteMenuItem isActive={isActive(settingsItem)} item={settingsItem} />
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
