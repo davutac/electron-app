@@ -1,3 +1,5 @@
+import { createFileRoute } from "@tanstack/react-router";
+
 const SettingsRoute = (): React.JSX.Element => (
   <section aria-labelledby="settings-title" className="flex min-h-full flex-col gap-6 p-6">
     <div className="flex flex-col gap-2">
@@ -21,4 +23,6 @@ const SettingsRoute = (): React.JSX.Element => (
   </section>
 );
 
-export default SettingsRoute;
+export const Route = createFileRoute("/settings")({
+  component: SettingsRoute,
+});

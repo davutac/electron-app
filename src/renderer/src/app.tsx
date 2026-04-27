@@ -1,32 +1,18 @@
-import AppSidebar from "@/components/app-sidebar";
-import { ThemeProvider } from "@/components/theme-provider";
-import Titlebar from "@/components/titlebar";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import DashboardRoute from "@/routes/dashboard";
-import SettingsRoute from "@/routes/settings";
-import { HashRouter, Navigate, Route, Routes } from "react-router";
-import { SidebarProvider } from "./components/ui/sidebar";
+import { createHashHistory, createRouter, RouterProvider } from "@tanstack/react-router";
 
-const App = (): React.JSX.Element => (
-  <ThemeProvider defaultTheme="dark" storageKey="electron-app-theme">
-    <HashRouter>
-      <TooltipProvider>
-        <div className="flex h-svh flex-col">
-          <SidebarProvider className="min-h-0 flex-1" defaultOpen={false}>
-            <Titlebar />
-            <AppSidebar />
-            <main className="min-h-0 flex-1 overflow-auto">
-              <Routes>
-                <Route element={<DashboardRoute />} path="/" />
-                <Route element={<SettingsRoute />} path="/settings" />
-                <Route element={<Navigate replace to="/" />} path="*" />
-              </Routes>
-            </main>
-          </SidebarProvider>
-        </div>
-      </TooltipProvider>
-    </HashRouter>
-  </ThemeProvider>
-);
+import { routeTree } from "./routeTree.gen";
+
+const router = createRouter({
+  history: createHashHistory(),
+  routeTree,
+});
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
+const App = (): React.JSX.Element => <RouterProvider router={router} />;
 
 export default App;

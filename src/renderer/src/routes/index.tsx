@@ -1,3 +1,5 @@
+import { createFileRoute } from "@tanstack/react-router";
+
 const DashboardRoute = (): React.JSX.Element => (
   <section aria-labelledby="dashboard-title" className="flex min-h-full flex-col gap-6 p-6">
     <div className="flex flex-col gap-2">
@@ -12,4 +14,6 @@ const DashboardRoute = (): React.JSX.Element => (
   </section>
 );
 
-export default DashboardRoute;
+export const Route = createFileRoute("/")({
+  component: DashboardRoute,
+});

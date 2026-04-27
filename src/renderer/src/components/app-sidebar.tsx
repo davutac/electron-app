@@ -7,9 +7,9 @@ import {
   LayoutDashboardIcon,
   SettingsIcon,
 } from "lucide-react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import type { LucideProps } from "lucide-react";
-import { NavLink, useLocation } from "react-router";
 
 import {
   Sidebar,
@@ -29,9 +29,11 @@ interface SidebarItem {
   title: string;
 }
 
+type AppRoutePath = "/" | "/settings";
+
 interface SidebarRouteItem extends SidebarItem {
   end?: boolean;
-  to: string;
+  to: AppRoutePath;
 }
 
 const primaryItems = [
@@ -76,13 +78,15 @@ const isRouteItem = (item: SidebarItem | SidebarRouteItem): item is SidebarRoute
   "to" in item;
 
 const AppSidebar = (): React.JSX.Element => {
-  const { pathname } = useLocation();
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
   const isActive = (item: SidebarRouteItem) =>
     item.end ? pathname === item.to : pathname.startsWith(item.to);
 
   return (
     <Sidebar className="app-sidebar" collapsible="icon">
-      <SidebarContent className="pt-1.5">
+      <SidebarContent className="pt-1">
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
@@ -91,7 +95,7 @@ const AppSidebar = (): React.JSX.Element => {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     isActive={isRouteItem(item) ? isActive(item) : false}
-                    render={isRouteItem(item) ? <NavLink end={item.end} to={item.to} /> : undefined}
+                    render={isRouteItem(item) ? <Link to={item.to} /> : undefined}
                     tooltip={item.title}
                   >
                     <item.icon />
@@ -123,7 +127,7 @@ const AppSidebar = (): React.JSX.Element => {
           <SidebarMenuItem>
             <SidebarMenuButton
               isActive={isActive(settingsItem)}
-              render={<NavLink to={settingsItem.to} />}
+              render={<Link to={settingsItem.to} />}
               tooltip={settingsItem.title}
             >
               <settingsItem.icon />
