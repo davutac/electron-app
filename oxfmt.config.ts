@@ -3,5 +3,8 @@ import ultracite from "ultracite/oxfmt";
 
 export default defineConfig({
   extends: [ultracite],
-  ignorePatterns: ["src/renderer/src/routeTree.gen.ts", "src/renderer/src/components/ui/**/*"],
+  ignorePatterns: [
+    "apps/desktop/src/renderer/src/routeTree.gen.ts",
+    "apps/desktop/src/renderer/src/components/ui/**/*",
+  ],
 });
