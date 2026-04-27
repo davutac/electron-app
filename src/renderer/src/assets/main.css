@@ -55,10 +55,7 @@
   --app-titlebar-height: env(titlebar-area-height, 34px);
   --app-titlebar-x: env(titlebar-area-x, 0px);
   --app-titlebar-width: env(titlebar-area-width, 100vw);
-  --app-titlebar-right: max(
-    0px,
-    calc(100vw - var(--app-titlebar-x) - var(--app-titlebar-width))
-  );
+  --app-titlebar-right: max(0px, calc(100vw - var(--app-titlebar-x) - var(--app-titlebar-width)));
 
   --radius: 0.625rem;
   --background: oklch(1 0 0);
