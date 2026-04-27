@@ -4,6 +4,7 @@ import Titlebar from "@/components/titlebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { createRootRoute, Navigate, Outlet } from "@tanstack/react-router";
+import { Toaster } from "@/components/ui/sonner";
 
 const RootLayout = (): React.JSX.Element => (
   <ThemeProvider defaultTheme="dark" storageKey="electron-app-theme">
@@ -18,6 +19,7 @@ const RootLayout = (): React.JSX.Element => (
         </SidebarProvider>
       </div>
     </TooltipProvider>
+    <Toaster />
   </ThemeProvider>
 );
 

@@ -3,6 +3,7 @@ import { app, BrowserWindow, ipcMain } from "electron";
 import * as ElectronUpdater from "electron-updater";
 
 const UPDATE_CHECK_DELAY_MS = 3000;
+const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 const UPDATE_STATUS_CHANNEL = "updates:status";
 const UPDATE_GET_STATUS_CHANNEL = "updates:get-status";
 const UPDATE_INSTALL_CHANNEL = "updates:install";
@@ -14,6 +15,7 @@ type UpdateStatus =
 
 let isInitialized = false;
 let areIpcHandlersRegistered = false;
+let isCheckingForUpdates = false;
 let currentStatus: UpdateStatus = { state: "idle" };
 
 const canSelfUpdate = (): boolean => {
@@ -52,10 +54,18 @@ const registerUpdaterIpc = (): void => {
 };
 
 const checkForUpdates = async (): Promise<void> => {
+  if (isCheckingForUpdates || currentStatus.state !== "idle") {
+    return;
+  }
+
+  isCheckingForUpdates = true;
+
   try {
     await ElectronUpdater.autoUpdater.checkForUpdates();
   } catch {
     // The error event above handles updater failures.
+  } finally {
+    isCheckingForUpdates = false;
   }
 };
 
@@ -102,5 +112,9 @@ export const initializeAutoUpdates = (mainWindow: BrowserWindow): void => {
     setTimeout(() => {
       void checkForUpdates();
     }, UPDATE_CHECK_DELAY_MS);
+
+    setInterval(() => {
+      void checkForUpdates();
+    }, UPDATE_CHECK_INTERVAL_MS);
   });
 };

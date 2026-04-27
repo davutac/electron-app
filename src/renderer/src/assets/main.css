@@ -55,7 +55,10 @@
   --app-titlebar-height: env(titlebar-area-height, 34px);
   --app-titlebar-x: env(titlebar-area-x, 0px);
   --app-titlebar-width: env(titlebar-area-width, 100vw);
-  --app-titlebar-right: max(0px, calc(100vw - var(--app-titlebar-x) - var(--app-titlebar-width)));
+  --app-titlebar-right: max(
+    0px,
+    calc(100vw - var(--app-titlebar-x) - var(--app-titlebar-width))
+  );
 
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -130,11 +133,26 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-color: var(--border) transparent;
+    scrollbar-width: thin;
   }
 
   body {
     @apply bg-background text-foreground;
     user-select: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 5px;
   }
   html {
     @apply font-sans;
