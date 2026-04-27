@@ -1,3 +1,4 @@
+import Versions from "@/components/versions";
 import { createFileRoute } from "@tanstack/react-router";
 
 const SettingsRoute = (): React.JSX.Element => (
@@ -20,6 +21,8 @@ const SettingsRoute = (): React.JSX.Element => (
         </p>
       </div>
     </div>
+
+    <Versions />
   </section>
 );
 

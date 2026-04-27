@@ -9,10 +9,10 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/renderer/src/*"],
-      "@renderer/*": ["src/renderer/src/*"]
+      "@/*": ["./src/renderer/src/*"],
+      "@/renderer/*": ["./src/renderer/src/*"],
+      "@/constants": ["./src/constants.ts"]
     },
     "strictNullChecks": true
   }

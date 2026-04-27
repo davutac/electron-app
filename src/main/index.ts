@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
+import { APP_NAME } from "@/constants";
 
 const TITLEBAR_HEIGHT = 34;
 const TRAFFIC_LIGHT_INSET = 12;
@@ -25,7 +26,7 @@ const createWindow = (): void => {
       : {}),
     ...(process.platform === "linux" ? { icon } : {}),
     show: false,
-    title: "Electron App",
+    title: APP_NAME,
     titleBarOverlay: {
       color: "#ffffff00",
       height: TITLEBAR_HEIGHT,

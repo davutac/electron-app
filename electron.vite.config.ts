@@ -5,7 +5,11 @@ import { defineConfig } from "electron-vite";
 import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  main: {},
+  main: {
+    resolve: {
+      alias: [{ find: "@/constants", replacement: resolve("src/constants.ts") }],
+    },
+  },
   preload: {},
   renderer: {
     plugins: [
@@ -18,10 +22,11 @@ export default defineConfig({
       tailwindcss(),
     ],
     resolve: {
-      alias: {
-        "@": resolve("src/renderer/src"),
-        "@renderer": resolve("src/renderer/src"),
-      },
+      alias: [
+        { find: "@/constants", replacement: resolve("src/constants.ts") },
+        { find: "@/renderer", replacement: resolve("src/renderer/src") },
+        { find: "@", replacement: resolve("src/renderer/src") },
+      ],
     },
   },
 });
