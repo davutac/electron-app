@@ -17,8 +17,18 @@ concurrency:
 
 jobs:
   test-and-build:
-    name: Test and build
-    runs-on: ubuntu-latest
+    name: Test and build (${{ matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS
+            os: macos-latest
+          - name: Windows
+            os: windows-latest
+          - name: Linux
+            os: ubuntu-latest
 
     steps:
       - name: Checkout
@@ -36,6 +46,7 @@ jobs:
         run: bun run check
 
       - name: Run tests
+        shell: bash
         run: |
           if node -e "process.exit(require('./package.json').scripts?.test ? 0 : 1)"; then
             bun run test
