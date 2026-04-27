@@ -58,15 +58,16 @@ const workspaceItems = [
     icon: GaugeIcon,
     title: "Metrics",
   },
-  {
-    icon: SettingsIcon,
-    title: "Settings",
-  },
 ] satisfies SidebarItem[];
+
+const settingsItem = {
+  icon: SettingsIcon,
+  title: "Settings",
+} satisfies SidebarItem;
 
 const AppSidebar = (): React.JSX.Element => (
   <Sidebar className="app-sidebar" collapsible="icon">
-    <SidebarContent>
+    <SidebarContent className="pt-1.5">
       <SidebarGroup>
         <SidebarGroupLabel>Application</SidebarGroupLabel>
         <SidebarGroupContent>
@@ -101,14 +102,9 @@ const AppSidebar = (): React.JSX.Element => (
     <SidebarFooter>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton>
-            <div className="flex aspect-square items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground">
-              EA
-            </div>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">Davut</span>
-              <span className="truncate text-muted-foreground text-xs">Desktop session</span>
-            </div>
+          <SidebarMenuButton tooltip={settingsItem.title}>
+            <settingsItem.icon />
+            <span>{settingsItem.title}</span>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarMenu>

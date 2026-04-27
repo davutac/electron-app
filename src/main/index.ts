@@ -3,6 +3,10 @@ import { join } from "node:path";
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
+const TITLEBAR_HEIGHT = 34;
+const TRAFFIC_LIGHT_INSET = 12;
+const TRAFFIC_LIGHT_SIZE = 12;
+
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -11,12 +15,20 @@ const createWindow = (): void => {
     height: 670,
     minHeight: 560,
     minWidth: 860,
+    ...(process.platform === "darwin"
+      ? {
+          trafficLightPosition: {
+            x: TRAFFIC_LIGHT_INSET,
+            y: Math.round((TITLEBAR_HEIGHT - TRAFFIC_LIGHT_SIZE) / 2),
+          },
+        }
+      : {}),
     ...(process.platform === "linux" ? { icon } : {}),
     show: false,
     title: "Electron App",
     titleBarOverlay: {
       color: "#ffffff00",
-      height: 44,
+      height: TITLEBAR_HEIGHT,
       symbolColor: "#f5f5f5",
     },
     titleBarStyle: "hidden",
