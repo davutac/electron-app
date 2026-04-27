@@ -1,21 +1,24 @@
-import { app, BrowserWindow, shell } from "electron";
 import { join } from "node:path";
 import { electronApp, is, optimizer } from "@electron-toolkit/utils";
+import { app, BrowserWindow, shell } from "electron";
 import icon from "../../resources/icon.png?asset";
 import { APP_NAME } from "@/constants";
+import { MIN_WINDOW_SIZE, readWindowState, writeWindowState } from "./window-state";
 
 const TITLEBAR_HEIGHT = 34;
 const TRAFFIC_LIGHT_INSET = 12;
 const TRAFFIC_LIGHT_SIZE = 12;
 
 const createWindow = (): void => {
+  const { isMaximized, ...windowBounds } = readWindowState();
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     autoHideMenuBar: true,
     backgroundColor: "#121212",
-    height: 670,
-    minHeight: 560,
-    minWidth: 860,
+    ...windowBounds,
+    minHeight: MIN_WINDOW_SIZE.height,
+    minWidth: MIN_WINDOW_SIZE.width,
     ...(process.platform === "darwin"
       ? {
           trafficLightPosition: {
@@ -37,11 +40,18 @@ const createWindow = (): void => {
       preload: join(import.meta.dirname, "../preload/index.mjs"),
       sandbox: false,
     },
-    width: 900,
   });
+
+  if (isMaximized === true) {
+    mainWindow.maximize();
+  }
 
   mainWindow.on("ready-to-show", () => {
     mainWindow.show();
+  });
+
+  mainWindow.on("close", () => {
+    writeWindowState(mainWindow);
   });
 
   mainWindow.webContents.setWindowOpenHandler((details) => {
