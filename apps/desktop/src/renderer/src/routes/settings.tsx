@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTheme } from "@/components/theme-provider";
 import type { Theme } from "@/components/theme-provider";
 import Versions from "@/components/versions";
+import SettingsUpdateRow from "./-components/settings-update-row";
 import {
   Select,
   SelectContent,
@@ -22,7 +23,7 @@ import {
   SettingsSectionHeader,
   SettingsSectionTitle,
 } from "@/components/ui/settings";
-import { isWebEnvironment } from "@/lib/electron-runtime";
+import { hasUpdateApi, isWebEnvironment } from "@/lib/electron-runtime";
 
 const themeItems = [
   { label: "System", value: "system" },
@@ -33,6 +34,7 @@ const themeItems = [
 const SettingsRoute = () => {
   const { setTheme, theme } = useTheme();
   const shouldShowVersions = !isWebEnvironment();
+  const shouldShowUpdates = hasUpdateApi();
   const handleThemeChange = (nextTheme: Theme | null): void => {
     if (!nextTheme) {
       return;
@@ -78,6 +80,7 @@ const SettingsRoute = () => {
                 </Select>
               </SettingsRowActions>
             </SettingsRow>
+            {shouldShowUpdates ? <SettingsUpdateRow /> : null}
           </SettingsRows>
         </SettingsSection>
 

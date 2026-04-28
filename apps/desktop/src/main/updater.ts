@@ -6,12 +6,15 @@ const UPDATE_CHECK_DELAY_MS = 3000;
 const UPDATE_CHECK_INTERVAL_MS = 60 * 60 * 1000;
 const UPDATE_STATUS_CHANNEL = "updates:status";
 const UPDATE_GET_STATUS_CHANNEL = "updates:get-status";
+const UPDATE_CHECK_CHANNEL = "updates:check";
 const UPDATE_INSTALL_CHANNEL = "updates:install";
 
 type UpdateStatus =
   | { state: "idle" }
+  | { state: "checking" }
   | { state: "downloading"; percent: number; version: string }
-  | { state: "ready"; version: string };
+  | { state: "ready"; version: string }
+  | { state: "unsupported" };
 
 let isInitialized = false;
 let areIpcHandlersRegistered = false;
@@ -38,6 +41,31 @@ const updateStatus = (status: UpdateStatus): void => {
   }
 };
 
+const checkForUpdates = async (): Promise<UpdateStatus> => {
+  if (!canSelfUpdate()) {
+    updateStatus({ state: "unsupported" });
+    return currentStatus;
+  }
+
+  if (isCheckingForUpdates || currentStatus.state !== "idle") {
+    return currentStatus;
+  }
+
+  isCheckingForUpdates = true;
+  updateStatus({ state: "checking" });
+
+  try {
+    await ElectronUpdater.autoUpdater.checkForUpdates();
+  } catch {
+    updateStatus({ state: "idle" });
+    // Updates are best-effort and should never interrupt normal app usage.
+  } finally {
+    isCheckingForUpdates = false;
+  }
+
+  return currentStatus;
+};
+
 const registerUpdaterIpc = (): void => {
   if (areIpcHandlersRegistered) {
     return;
@@ -46,6 +74,7 @@ const registerUpdaterIpc = (): void => {
   areIpcHandlersRegistered = true;
 
   ipcMain.handle(UPDATE_GET_STATUS_CHANNEL, () => currentStatus);
+  ipcMain.handle(UPDATE_CHECK_CHANNEL, () => checkForUpdates());
   ipcMain.handle(UPDATE_INSTALL_CHANNEL, () => {
     if (currentStatus.state === "ready") {
       ElectronUpdater.autoUpdater.quitAndInstall();
@@ -53,26 +82,15 @@ const registerUpdaterIpc = (): void => {
   });
 };
 
-const checkForUpdates = async (): Promise<void> => {
-  if (isCheckingForUpdates || currentStatus.state !== "idle") {
-    return;
-  }
-
-  isCheckingForUpdates = true;
-
-  try {
-    await ElectronUpdater.autoUpdater.checkForUpdates();
-  } catch {
-    // The error event above handles updater failures.
-  } finally {
-    isCheckingForUpdates = false;
-  }
-};
-
 export const initializeAutoUpdates = (mainWindow: BrowserWindow): void => {
   registerUpdaterIpc();
 
-  if (isInitialized || !canSelfUpdate()) {
+  if (isInitialized) {
+    return;
+  }
+
+  if (!canSelfUpdate()) {
+    updateStatus({ state: "unsupported" });
     return;
   }
 

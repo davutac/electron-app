@@ -39,7 +39,7 @@ const TitlebarUpdateButton = () => {
     };
   }, [updateApi]);
 
-  if (status.state === "idle") {
+  if (status.state === "idle" || status.state === "checking" || status.state === "unsupported") {
     return null;
   }
 
