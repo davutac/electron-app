@@ -23,7 +23,7 @@ function SettingsSection({ className, ...props }: SettingsSectionProps) {
   return (
     <section
       data-slot="settings-section"
-      className={cn("flex w-full flex-col gap-5", className)}
+      className={cn("flex w-full flex-col gap-3", className)}
       {...props}
     />
   );
@@ -47,7 +47,7 @@ function SettingsSectionTitle({ className, ...props }: SettingsSectionTitleProps
   return (
     <h2
       data-slot="settings-section-title"
-      className={cn("font-semibold text-2xl tracking-tight", className)}
+      className={cn("font-semibold text-lg pl-5 tracking-tight", className)}
       {...props}
     />
   );
