@@ -1,4 +1,5 @@
 import AppSidebar from "@/components/app-sidebar";
+import IpcToastListener from "@/components/ipc-toast-listener";
 import { ThemeProvider } from "@/components/theme-provider";
 import Titlebar from "@/components/titlebar";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -19,6 +20,7 @@ const RootLayout = () => (
         </SidebarProvider>
       </div>
     </TooltipProvider>
+    <IpcToastListener />
     <Toaster />
   </ThemeProvider>
 );

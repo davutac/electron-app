@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { BrowserWindow } from "electron";
 import { app, screen } from "electron";
+import { Result, TaggedError } from "better-result";
 
 const MIN_VISIBLE_WINDOW_EDGE_LENGTH = 100;
 export const MIN_WINDOW_SIZE = {
@@ -26,6 +27,50 @@ const DEFAULT_WINDOW_STATE: WindowState = {
 
 const getWindowStatePath = (): string => join(app.getPath("userData"), WINDOW_STATE_FILE);
 
+const formatErrorCause = (cause: unknown): string =>
+  cause instanceof Error ? cause.message : String(cause);
+
+type WindowStateErrorReason = "parse" | "read" | "validate" | "write";
+
+const getWindowStateErrorMessage = (args: {
+  cause?: unknown;
+  path: string;
+  reason: WindowStateErrorReason;
+}): string => {
+  switch (args.reason) {
+    case "parse": {
+      return `Failed to parse window state from ${args.path}: ${formatErrorCause(args.cause)}`;
+    }
+    case "read": {
+      return `Failed to read window state from ${args.path}: ${formatErrorCause(args.cause)}`;
+    }
+    case "validate": {
+      return `Window state in ${args.path} is missing valid width or height values`;
+    }
+    case "write": {
+      return `Failed to write window state to ${args.path}: ${formatErrorCause(args.cause)}`;
+    }
+    default: {
+      const exhaustiveReason: never = args.reason;
+      return exhaustiveReason;
+    }
+  }
+};
+
+class WindowStateError extends TaggedError("WindowStateError")<{
+  cause?: unknown;
+  message: string;
+  path: string;
+  reason: WindowStateErrorReason;
+}>() {
+  constructor(args: { cause?: unknown; path: string; reason: WindowStateErrorReason }) {
+    super({
+      ...args,
+      message: getWindowStateErrorMessage(args),
+    });
+  }
+}
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === "object" && value !== null;
 
@@ -49,6 +94,89 @@ const isWindowVisibleOnScreen = (
     );
   });
 
+const readWindowStateFile = (windowStatePath: string): Result<string, WindowStateError> =>
+  Result.try({
+    catch: (cause) => new WindowStateError({ cause, path: windowStatePath, reason: "read" }),
+    try: () => readFileSync(windowStatePath, "utf-8"),
+  });
+
+const parseWindowStateFile = (
+  fileContents: string,
+  windowStatePath: string,
+): Result<unknown, WindowStateError> =>
+  Result.try({
+    catch: (cause) => new WindowStateError({ cause, path: windowStatePath, reason: "parse" }),
+    try: () => JSON.parse(fileContents) as unknown,
+  });
+
+const normalizeWindowState = (
+  parsedWindowState: unknown,
+  windowStatePath: string,
+): Result<WindowState, WindowStateError> => {
+  if (
+    !isRecord(parsedWindowState) ||
+    !isFiniteNumber(parsedWindowState.width) ||
+    !isFiniteNumber(parsedWindowState.height)
+  ) {
+    return Result.err(new WindowStateError({ path: windowStatePath, reason: "validate" }));
+  }
+
+  const windowState: WindowState = {
+    height: Math.max(parsedWindowState.height, MIN_WINDOW_SIZE.height),
+    width: Math.max(parsedWindowState.width, MIN_WINDOW_SIZE.width),
+  };
+
+  if (
+    isFiniteNumber(parsedWindowState.x) &&
+    isFiniteNumber(parsedWindowState.y) &&
+    isWindowVisibleOnScreen({
+      height: windowState.height,
+      width: windowState.width,
+      x: parsedWindowState.x,
+      y: parsedWindowState.y,
+    })
+  ) {
+    windowState.x = parsedWindowState.x;
+    windowState.y = parsedWindowState.y;
+  }
+
+  if (parsedWindowState.isMaximized === true) {
+    windowState.isMaximized = true;
+  }
+
+  return Result.ok(windowState);
+};
+
+const readPersistedWindowState = (
+  windowStatePath: string,
+): Result<WindowState, WindowStateError> => {
+  const fileContents = readWindowStateFile(windowStatePath);
+
+  if (!Result.isOk(fileContents)) {
+    return fileContents;
+  }
+
+  const parsedWindowState = parseWindowStateFile(fileContents.value, windowStatePath);
+
+  if (!Result.isOk(parsedWindowState)) {
+    return parsedWindowState;
+  }
+
+  return normalizeWindowState(parsedWindowState.value, windowStatePath);
+};
+
+const persistWindowState = (windowState: WindowState): Result<void, WindowStateError> => {
+  const windowStatePath = getWindowStatePath();
+
+  return Result.try({
+    catch: (cause) => new WindowStateError({ cause, path: windowStatePath, reason: "write" }),
+    try: () => {
+      mkdirSync(app.getPath("userData"), { recursive: true });
+      writeFileSync(windowStatePath, `${JSON.stringify(windowState, null, 2)}\n`);
+    },
+  });
+};
+
 export const readWindowState = (): WindowState => {
   const windowStatePath = getWindowStatePath();
 
@@ -56,44 +184,8 @@ export const readWindowState = (): WindowState => {
     return DEFAULT_WINDOW_STATE;
   }
 
-  try {
-    const parsedWindowState: unknown = JSON.parse(readFileSync(windowStatePath, "utf-8"));
-
-    if (
-      !isRecord(parsedWindowState) ||
-      !isFiniteNumber(parsedWindowState.width) ||
-      !isFiniteNumber(parsedWindowState.height)
-    ) {
-      return DEFAULT_WINDOW_STATE;
-    }
-
-    const windowState: WindowState = {
-      height: Math.max(parsedWindowState.height, MIN_WINDOW_SIZE.height),
-      width: Math.max(parsedWindowState.width, MIN_WINDOW_SIZE.width),
-    };
-
-    if (
-      isFiniteNumber(parsedWindowState.x) &&
-      isFiniteNumber(parsedWindowState.y) &&
-      isWindowVisibleOnScreen({
-        height: windowState.height,
-        width: windowState.width,
-        x: parsedWindowState.x,
-        y: parsedWindowState.y,
-      })
-    ) {
-      windowState.x = parsedWindowState.x;
-      windowState.y = parsedWindowState.y;
-    }
-
-    if (parsedWindowState.isMaximized === true) {
-      windowState.isMaximized = true;
-    }
-
-    return windowState;
-  } catch {
-    return DEFAULT_WINDOW_STATE;
-  }
+  const windowState = readPersistedWindowState(windowStatePath);
+  return Result.isOk(windowState) ? windowState.value : DEFAULT_WINDOW_STATE;
 };
 
 export const writeWindowState = (window: BrowserWindow): void => {
@@ -107,10 +199,9 @@ export const writeWindowState = (window: BrowserWindow): void => {
     isMaximized: window.isMaximized(),
   };
 
-  try {
-    mkdirSync(app.getPath("userData"), { recursive: true });
-    writeFileSync(getWindowStatePath(), `${JSON.stringify(windowState, null, 2)}\n`);
-  } catch {
+  const writeResult = persistWindowState(windowState);
+
+  if (!Result.isOk(writeResult)) {
     // Persisting window state is best-effort and should never block startup.
   }
 };
