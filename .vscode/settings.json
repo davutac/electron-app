@@ -53,5 +53,8 @@
   },
   "editor.codeActionsOnSave": {
     "source.fixAll.oxc": "explicit"
+  },
+  "[tailwindcss]": {
+    "editor.defaultFormatter": "oxc.oxc-vscode"
   }
 }
