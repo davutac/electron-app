@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 
-type Theme = "dark" | "light" | "system";
+export type Theme = "dark" | "light" | "system";
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -14,7 +14,12 @@ interface ThemeProviderState {
   theme: Theme;
 }
 
-const ThemeProviderContext = createContext<ThemeProviderState | undefined>(undefined);
+const initialState: ThemeProviderState = {
+  setTheme: () => null,
+  theme: "system",
+};
+
+const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
 const getSystemTheme = (): Exclude<Theme, "system"> =>
   window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -53,7 +58,7 @@ export const ThemeProvider = ({
 export const useTheme = (): ThemeProviderState => {
   const context = useContext(ThemeProviderContext);
 
-  if (!context) {
+  if (context === undefined) {
     throw new Error("useTheme must be used within a ThemeProvider");
   }
 

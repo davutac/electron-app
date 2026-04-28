@@ -1,34 +1,88 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useTheme } from "@/components/theme-provider";
+import type { Theme } from "@/components/theme-provider";
 import Versions from "@/components/versions";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Settings,
+  SettingsRow,
+  SettingsRowActions,
+  SettingsRowContent,
+  SettingsRowDescription,
+  SettingsRows,
+  SettingsRowTitle,
+  SettingsSection,
+  SettingsSectionHeader,
+  SettingsSectionTitle,
+} from "@/components/ui/settings";
 import { isWebEnvironment } from "@/lib/electron-runtime";
 
+const themeItems = [
+  { label: "System", value: "system" },
+  { label: "Light", value: "light" },
+  { label: "Dark", value: "dark" },
+] satisfies { label: string; value: Theme }[];
+
 const SettingsRoute = (): React.JSX.Element => {
+  const { setTheme, theme } = useTheme();
   const shouldShowVersions = !isWebEnvironment();
+  const handleThemeChange = (nextTheme: Theme | null): void => {
+    if (!nextTheme) {
+      return;
+    }
+
+    setTheme(nextTheme);
+  };
 
   return (
-    <section aria-labelledby="settings-title" className="flex min-h-full flex-col gap-6 p-6">
-      <div className="flex flex-col gap-2">
-        <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
-          Settings
-        </p>
-        <h1 id="settings-title" className="font-semibold text-2xl tracking-tight">
-          Settings
-        </h1>
-        <p className="max-w-2xl text-muted-foreground text-sm">
-          Manage application preferences and workspace defaults.
-        </p>
-      </div>
+    <section aria-labelledby="general-settings-title" className="min-h-full p-6 sm:p-10">
+      <Settings>
+        <SettingsSection aria-labelledby="general-settings-title">
+          <SettingsSectionHeader>
+            <SettingsSectionTitle id="general-settings-title">General</SettingsSectionTitle>
+          </SettingsSectionHeader>
 
-      <div className="max-w-2xl rounded-lg border bg-card p-4 text-card-foreground">
-        <div className="flex flex-col gap-1">
-          <h2 className="font-medium text-sm">General</h2>
-          <p className="text-muted-foreground text-sm">
-            Settings controls can be added here as the app preferences take shape.
-          </p>
-        </div>
-      </div>
+          <SettingsRows>
+            <SettingsRow>
+              <SettingsRowContent>
+                <SettingsRowTitle id="theme-title">Theme</SettingsRowTitle>
+                <SettingsRowDescription id="theme-description">
+                  Choose how the app appears
+                </SettingsRowDescription>
+              </SettingsRowContent>
+              <SettingsRowActions>
+                <Select items={themeItems} onValueChange={handleThemeChange} value={theme}>
+                  <SelectTrigger
+                    aria-describedby="theme-description"
+                    aria-labelledby="theme-title"
+                    className="w-36"
+                  >
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {themeItems.map((item) => (
+                        <SelectItem key={item.value} value={item.value}>
+                          {item.label}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </SettingsRowActions>
+            </SettingsRow>
+          </SettingsRows>
+        </SettingsSection>
 
-      {shouldShowVersions ? <Versions /> : null}
+        {shouldShowVersions ? <Versions /> : null}
+      </Settings>
     </section>
   );
 };
