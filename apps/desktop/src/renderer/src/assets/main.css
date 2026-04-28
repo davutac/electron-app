@@ -186,3 +186,7 @@
   app-region: drag;
   -webkit-app-region: drag;
 }
+
+.padding-top-titlebar {
+  padding-top: var(--app-titlebar-height) !important;
+}
