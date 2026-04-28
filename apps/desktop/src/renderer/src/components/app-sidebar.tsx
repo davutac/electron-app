@@ -112,7 +112,7 @@ const SidebarRouteMenuItem = ({ isActive, item }: SidebarRouteMenuItemProps): Re
       >
         <item.icon />
         <span>{item.title}</span>
-        <Kbd className="ml-auto opacity-0 transition-opacity group-focus-within/menu-button:opacity-100 group-hover/menu-button:opacity-100 group-data-[collapsible=icon]:hidden">
+        <Kbd className="ml-auto opacity-0 transition-opacity group-hover/menu-button:opacity-100 group-data-[collapsible=icon]:hidden">
           {shortcutLabel}
         </Kbd>
       </SidebarMenuButton>
