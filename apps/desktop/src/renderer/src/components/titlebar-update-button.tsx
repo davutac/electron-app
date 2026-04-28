@@ -12,7 +12,7 @@ const MAX_PROGRESS = 100;
 const clampProgress = (percent: number): number =>
   Math.min(MAX_PROGRESS, Math.max(MIN_PROGRESS, percent));
 
-const TitlebarUpdateButton = (): React.JSX.Element | null => {
+const TitlebarUpdateButton = () => {
   const updateApi = window.api.updates;
   const [status, setStatus] = useState<UpdateStatus>({ state: "idle" });
 

@@ -28,7 +28,7 @@ export const ThemeProvider = ({
   children,
   defaultTheme = "dark",
   storageKey = "electron-app-theme",
-}: ThemeProviderProps): React.JSX.Element => {
+}: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme | null) ?? defaultTheme,
   );

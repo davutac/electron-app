@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { formatForDisplay, useHotkey } from "@tanstack/react-hotkeys";
 import type { RegisterableHotkey } from "@tanstack/react-hotkeys";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
 import type { ForwardRefExoticComponent, RefAttributes } from "react";
 import type { LucideProps } from "lucide-react";
 
@@ -88,19 +88,21 @@ interface SidebarRouteMenuItemProps {
   item: SidebarRouteItem;
 }
 
-const SidebarRouteMenuItem = ({ isActive, item }: SidebarRouteMenuItemProps): React.JSX.Element => {
+const SidebarRouteMenuItem = ({ isActive, item }: SidebarRouteMenuItemProps) => {
   const navigate = useNavigate();
   const shortcutLabel = formatForDisplay(item.shortcut);
-
-  useHotkey(item.shortcut, () => {
+  const handleNavigate = (): void => {
     void navigate({ to: item.to });
-  });
+  };
+
+  useHotkey(item.shortcut, handleNavigate);
 
   return (
     <SidebarMenuItem>
       <SidebarMenuButton
         isActive={isActive}
-        render={<Link to={item.to} />}
+        onClick={handleNavigate}
+        type="button"
         tooltip={{
           children: (
             <>
@@ -120,7 +122,7 @@ const SidebarRouteMenuItem = ({ isActive, item }: SidebarRouteMenuItemProps): Re
   );
 };
 
-const AppSidebar = (): React.JSX.Element => {
+const AppSidebar = () => {
   const pathname = useRouterState({
     select: (state) => state.location.pathname,
   });

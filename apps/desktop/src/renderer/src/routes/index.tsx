@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-const DashboardRoute = (): React.JSX.Element => (
+const DashboardRoute = () => (
   <section aria-labelledby="dashboard-title" className="flex min-h-full flex-col gap-6 p-6">
     <div className="flex flex-col gap-2">
       <p className="font-medium text-muted-foreground text-xs uppercase tracking-wide">Dashboard</p>

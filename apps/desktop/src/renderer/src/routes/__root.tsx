@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { createRootRoute, Navigate, Outlet } from "@tanstack/react-router";
 import { Toaster } from "@/components/ui/sonner";
 
-const RootLayout = (): React.JSX.Element => (
+const RootLayout = () => (
   <ThemeProvider defaultTheme="dark" storageKey="electron-app-theme">
     <TooltipProvider>
       <div className="flex h-svh flex-col">

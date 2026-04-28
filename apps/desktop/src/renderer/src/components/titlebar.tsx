@@ -5,7 +5,7 @@ import TitlebarUpdateButton from "@/components/titlebar-update-button";
 import { APP_NAME } from "@/constants";
 import { isWebEnvironment } from "@/lib/electron-runtime";
 
-const Titlebar = (): React.JSX.Element => {
+const Titlebar = () => {
   const shouldShowUpdater = !isWebEnvironment();
 
   return (

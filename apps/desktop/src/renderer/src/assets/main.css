@@ -155,10 +155,10 @@
     @apply font-sans;
   }
 
-  *[type="button"],
-  *[role="button"],
-  a[href],
-  [data-slot="sidebar-menu-button"] {
+  button:not(:disabled),
+  [data-slot="sidebar-menu-button"],
+  [role="button"]:not(:disabled) {
+    cursor: default;
     app-region: no-drag;
     -webkit-app-region: no-drag;
   }

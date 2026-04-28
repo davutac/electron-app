@@ -18,7 +18,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 
 ### Type Safety & Explicitness
 
-- Use explicit types for function parameters and return values when they enhance clarity
+- Use explicit types for function parameters and non-component return values when they enhance clarity
 - Prefer `unknown` over `any` when the type is genuinely unknown
 - Use const assertions (`as const`) for immutable values and literal types
 - Leverage TypeScript's type narrowing instead of type assertions
@@ -43,6 +43,7 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 ### React & JSX
 
 - Use function components over class components
+- Let React component return types be inferred; avoid explicit `React.JSX.Element` annotations unless a specific public API needs them
 - Call hooks at the top level only, never conditionally
 - Specify all dependencies in hook dependency arrays correctly
 - Use the `key` prop for elements in iterables (prefer unique IDs over array indices)

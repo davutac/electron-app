@@ -30,7 +30,7 @@ const themeItems = [
   { label: "Dark", value: "dark" },
 ] satisfies { label: string; value: Theme }[];
 
-const SettingsRoute = (): React.JSX.Element => {
+const SettingsRoute = () => {
   const { setTheme, theme } = useTheme();
   const shouldShowVersions = !isWebEnvironment();
   const handleThemeChange = (nextTheme: Theme | null): void => {
