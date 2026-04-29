@@ -1,5 +1,6 @@
 appId: com.electron.app
 productName: electron-app
+artifactName: ${productName}-${version}-${os}-${arch}.${ext}
 directories:
   buildResources: build
 files:
@@ -14,7 +15,6 @@ asarUnpack:
 win:
   executableName: electron-app
 nsis:
-  artifactName: ${productName}-${version}-setup.${ext}
   shortcutName: ${productName}
   uninstallDisplayName: ${productName}
   createDesktopShortcut: always
@@ -29,8 +29,6 @@ mac:
   target:
     - dmg
     - zip
-dmg:
-  artifactName: ${productName}-${version}.${ext}
 linux:
   executableName: electron-app
   target:
@@ -39,10 +37,6 @@ linux:
     - deb
   maintainer: electronjs.org
   category: Utility
-appImage:
-  artifactName: ${productName}-${version}.${ext}
-snap:
-  artifactName: ${productName}-${version}.${ext}
 npmRebuild: false
 publish:
   provider: github
