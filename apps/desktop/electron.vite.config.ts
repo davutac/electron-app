@@ -6,6 +6,12 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   main: {
+    build: {
+      externalizeDeps: {
+        exclude: ["@repo/database"],
+        include: ["better-sqlite3"],
+      },
+    },
     resolve: {
       alias: [{ find: "@/constants", replacement: resolve("src/constants.ts") }],
     },

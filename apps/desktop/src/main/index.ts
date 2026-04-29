@@ -3,6 +3,8 @@ import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import { app, BrowserWindow, shell } from "electron";
 import icon from "../../build/icon.png?asset";
 import { APP_NAME } from "@/constants";
+import { closeDatabase } from "./database";
+import { registerAppStartupIpc } from "./startup";
 import { initializeAutoUpdates } from "./updater";
 import { MIN_WINDOW_SIZE, readWindowState, writeWindowState } from "./window-state";
 
@@ -87,6 +89,7 @@ void (async (): Promise<void> => {
     optimizer.watchWindowShortcuts(window);
   });
 
+  registerAppStartupIpc();
   createWindow();
 
   app.on("activate", () => {
@@ -97,6 +100,10 @@ void (async (): Promise<void> => {
     }
   });
 })();
+
+app.on("before-quit", () => {
+  closeDatabase();
+});
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

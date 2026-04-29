@@ -1,18 +1,10 @@
-import { createHashHistory, createRouter, RouterProvider } from "@tanstack/react-router";
+import StartupGate from "@/components/startup-gate";
+import { ThemeProvider } from "@/components/theme-provider";
 
-import { routeTree } from "./routeTree.gen";
-
-const router = createRouter({
-  history: createHashHistory(),
-  routeTree,
-});
-
-declare module "@tanstack/react-router" {
-  interface Register {
-    router: typeof router;
-  }
-}
-
-const App = () => <RouterProvider router={router} />;
+const App = () => (
+  <ThemeProvider defaultTheme="dark" storageKey="electron-app-theme">
+    <StartupGate />
+  </ThemeProvider>
+);
 
 export default App;

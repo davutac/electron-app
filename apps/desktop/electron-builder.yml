@@ -13,6 +13,11 @@ files:
   - "!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}"
 asarUnpack:
   - resources/**
+extraResources:
+  - from: ../../packages/database/drizzle
+    to: database/drizzle
+    filter:
+      - "**/*"
 win:
   executableName: electron-app
 nsis:
