@@ -10,7 +10,7 @@ const APP_PACKAGE_PATH = join(import.meta.dirname, "..", "apps", "desktop", "pac
 const VERSION_PATTERN = /^\d+\.\d+\.\d+$/u;
 const BUMP_TYPES = new Set(["major", "minor", "patch"]);
 const USAGE =
-  "Usage: bun run release [patch|minor|major|x.y.z] [--dry-run] [--no-push] [--skip-check]";
+  "Usage: bun run release [major|minor|patch|x.y.z] [--dry-run] [--no-push] [--skip-check]";
 
 const writeLine = (message = "") => {
   process.stdout.write(`${message}\n`);
@@ -126,7 +126,7 @@ const promptForRelease = async () => {
   const readline = createInterface({ input, output });
 
   try {
-    const answer = await readline.question("New version or bump (patch/minor/major): ");
+    const answer = await readline.question("New version or bump (major/minor/patch): ");
     return answer.trim();
   } finally {
     readline.close();

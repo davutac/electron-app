@@ -62,10 +62,10 @@ The script prints the current desktop app version from `apps/desktop/package.jso
 
 ```text
 Current version: 0.0.1
-New version or bump (patch/minor/major):
+New version or bump (major/minor/patch):
 ```
 
-You can enter an exact version such as `0.0.2`, or a bump type such as `patch`, `minor`, or `major`. The script updates the desktop package version, runs checks, commits the version change, creates a matching `vX.Y.Z` tag, and pushes the commit and tag.
+You can enter an exact version such as `0.0.2`, or a bump type such as `major`, `minor`, or `patch`. The script updates the desktop package version, runs checks, commits the version change, creates a matching `vX.Y.Z` tag, and pushes the commit and tag.
 
 For non-interactive usage:
 
