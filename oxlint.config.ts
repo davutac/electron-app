@@ -8,7 +8,5 @@ export default defineConfig({
   ignorePatterns: [
     "apps/desktop/src/renderer/src/components/ui/**/*",
     "apps/desktop/src/renderer/src/routeTree.gen.ts",
-    "apps/backend/dist/**/*",
-    "apps/backend/worker-configuration.d.ts",
   ],
 });

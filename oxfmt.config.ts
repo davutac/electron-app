@@ -6,6 +6,5 @@ export default defineConfig({
   ignorePatterns: [
     "apps/desktop/src/renderer/src/routeTree.gen.ts",
     "apps/desktop/src/renderer/src/components/ui/**/*",
-    "apps/backend/wrangler.jsonc",
   ],
 });
