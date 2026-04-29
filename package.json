@@ -14,6 +14,7 @@
     "build:unpack": "turbo run build:unpack",
     "build:win": "turbo run build:win",
     "check": "ultracite check",
+    "deploy": "turbo run deploy",
     "dev": "turbo run dev",
     "fix": "ultracite fix",
     "lint": "ultracite check",

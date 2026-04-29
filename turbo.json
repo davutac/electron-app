@@ -25,6 +25,10 @@
       "cache": false,
       "persistent": true
     },
+    "@repo/backend#deploy": {
+      "cache": false,
+      "dependsOn": ["build"]
+    },
     "start": {
       "cache": false,
       "persistent": true

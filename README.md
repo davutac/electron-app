@@ -17,11 +17,12 @@ It is not intended to represent one specific finished app. Treat it as a foundat
 - [Tailwind CSS](https://tailwindcss.com/), [Base UI](https://base-ui.com/), and [shadcn](https://ui.shadcn.com/) for UI foundations.
 - [TanStack Router](https://tanstack.com/router/latest) for type-safe routing.
 - [Electron Builder](https://www.electron.build/) and [electron-updater](https://www.electron.build/auto-update) for packaging and updates.
+- [ElysiaJS](https://elysiajs.com/) and [Cloudflare Workers](https://workers.cloudflare.com/) for the backend.
 - [Ultracite](https://www.ultracite.ai/) with Oxlint and Oxfmt for linting and formatting.
 
 ## Project Setup
 
-The desktop app lives in `apps/desktop` as the `@repo/desktop` workspace package.
+The desktop app lives in `apps/desktop` as the `@repo/desktop` workspace package. The backend lives in `apps/backend` as the `@repo/backend` workspace package.
 
 Before starting a new app from this template, update app-specific values such as the package names, Electron Builder `appId`, product name, icons, metadata, and release configuration.
 
@@ -35,6 +36,12 @@ $ bun install
 
 ```bash
 $ bun run dev
+```
+
+To run only the backend Worker locally:
+
+```bash
+$ bun run --cwd apps/backend dev
 ```
 
 ### Build

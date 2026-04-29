@@ -4,4 +4,6 @@ dist
 out
 .DS_Store
 .eslintcache
+.wrangler
+*.tsbuildinfo
 *.log*
