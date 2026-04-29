@@ -8,6 +8,17 @@ It is not intended to represent one specific finished app. Treat it as a foundat
 
 - [VSCode](https://code.visualstudio.com/) or [Cursor](https://cursor.com/) with the [Oxlint](https://marketplace.visualstudio.com/items?itemName=oxc.oxc-vscode) extension.
 
+## Tech Stack
+
+- [Electron](https://www.electronjs.org/) for the desktop runtime.
+- [React](https://react.dev/) and [TypeScript](https://www.typescriptlang.org/) for the app UI.
+- [Electron Vite](https://electron-vite.org/) and [Vite](https://vite.dev/) for development and production builds.
+- [Bun](https://bun.sh/) workspaces and [Turborepo](https://turbo.build/repo) for monorepo management.
+- [Tailwind CSS](https://tailwindcss.com/), [Base UI](https://base-ui.com/), and [shadcn](https://ui.shadcn.com/) for UI foundations.
+- [TanStack Router](https://tanstack.com/router/latest) for type-safe routing.
+- [Electron Builder](https://www.electron.build/) and [electron-updater](https://www.electron.build/auto-update) for packaging and updates.
+- [Ultracite](https://www.ultracite.ai/) with Oxlint and Oxfmt for linting and formatting.
+
 ## Project Setup
 
 The desktop app lives in `apps/desktop` as the `@repo/desktop` workspace package.
