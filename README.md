@@ -49,3 +49,31 @@ $ bun run build:mac
 # For Linux
 $ bun run build:linux
 ```
+
+### Release
+
+Releases are tag-based. Run the release helper from the repository root:
+
+```bash
+$ bun run release
+```
+
+The script prints the current desktop app version from `apps/desktop/package.json` and asks for the next version or a bump type:
+
+```text
+Current version: 0.0.1
+New version or bump (patch/minor/major):
+```
+
+You can enter an exact version such as `0.0.2`, or a bump type such as `patch`, `minor`, or `major`. The script updates the desktop package version, runs checks, commits the version change, creates a matching `vX.Y.Z` tag, and pushes the commit and tag.
+
+For non-interactive usage:
+
+```bash
+$ bun run release patch
+$ bun run release 0.0.2
+```
+
+Pushing the tag triggers `.github/workflows/release.yml`, which builds macOS, Windows, and Linux packages, then publishes the GitHub release assets and `latest*.yml` updater metadata.
+
+`electron-updater` compares the installed app version with the version in the published `latest*.yml` files. To test updates, install one packaged version, then publish a higher version.

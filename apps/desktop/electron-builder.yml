@@ -40,4 +40,6 @@ linux:
 npmRebuild: false
 publish:
   provider: github
+  owner: davutac
+  repo: electron-app
   releaseType: release

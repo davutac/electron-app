@@ -7,7 +7,7 @@
   "author": "Davut Caliskan",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tensei/electron-app.git",
+    "url": "https://github.com/davutac/electron-app.git",
     "directory": "apps/desktop"
   },
   "type": "module",
