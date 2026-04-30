@@ -1,6 +1,7 @@
 import StartupSplash from "@/components/startup-splash";
 import { createHashHistory, createRouter, RouterProvider } from "@tanstack/react-router";
 import { Result, TaggedError } from "better-result";
+import { AnimatePresence } from "motion/react";
 import { useCallback, useEffect, useState } from "react";
 
 import { routeTree } from "../routeTree.gen";
@@ -80,11 +81,18 @@ const StartupGate = () => {
     void startApp();
   }, [startApp]);
 
-  if (!hasStartupFinished || !hasMinimumSplashDurationElapsed) {
-    return <StartupSplash hasError={hasStartupFailed} onRetry={startApp} />;
-  }
+  const canRenderRoutes = hasStartupFinished && hasMinimumSplashDurationElapsed;
 
-  return <RouterProvider router={router} />;
+  return (
+    <>
+      {canRenderRoutes ? <RouterProvider router={router} /> : null}
+      <AnimatePresence initial={false}>
+        {canRenderRoutes ? null : (
+          <StartupSplash hasError={hasStartupFailed} key="startup-splash" onRetry={startApp} />
+        )}
+      </AnimatePresence>
+    </>
+  );
 };
 
 export default StartupGate;
