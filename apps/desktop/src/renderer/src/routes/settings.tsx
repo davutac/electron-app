@@ -1,16 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useTheme } from "@/components/theme-provider";
-import type { Theme } from "@/components/theme-provider";
+import { ModeToggle } from "@/components/mode-toggle";
 import Versions from "@/components/versions";
 import SettingsUpdateRow from "./-components/settings-update-row";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Settings,
   SettingsRow,
@@ -25,23 +16,9 @@ import {
 } from "@/components/ui/settings";
 import { hasUpdateApi, isWebEnvironment } from "@/lib/electron-runtime";
 
-const themeItems = [
-  { label: "System", value: "system" },
-  { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
-] satisfies { label: string; value: Theme }[];
-
 const SettingsRoute = () => {
-  const { setTheme, theme } = useTheme();
   const shouldShowVersions = !isWebEnvironment();
   const shouldShowUpdates = hasUpdateApi();
-  const handleThemeChange = (nextTheme: Theme | null): void => {
-    if (!nextTheme) {
-      return;
-    }
-
-    setTheme(nextTheme);
-  };
 
   return (
     <section aria-labelledby="general-settings-title" className="min-h-full p-6 sm:p-10">
@@ -60,24 +37,7 @@ const SettingsRoute = () => {
                 </SettingsRowDescription>
               </SettingsRowContent>
               <SettingsRowActions>
-                <Select items={themeItems} onValueChange={handleThemeChange} value={theme}>
-                  <SelectTrigger
-                    aria-describedby="theme-description"
-                    aria-labelledby="theme-title"
-                    className="w-36"
-                  >
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {themeItems.map((item) => (
-                        <SelectItem key={item.value} value={item.value}>
-                          {item.label}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                <ModeToggle />
               </SettingsRowActions>
             </SettingsRow>
             {shouldShowUpdates ? <SettingsUpdateRow /> : null}

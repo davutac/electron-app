@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 export type Theme = "dark" | "light" | "system";
@@ -21,38 +21,46 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 
-const getSystemTheme = (): Exclude<Theme, "system"> =>
-  window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-
-export const ThemeProvider = ({
+const ThemeProvider = ({
   children,
-  defaultTheme = "dark",
-  storageKey = "electron-app-theme",
+  defaultTheme = "system",
+  storageKey = "vite-ui-theme",
+  ...props
 }: ThemeProviderProps) => {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme | null) ?? defaultTheme,
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme,
   );
 
   useEffect(() => {
     const root = window.document.documentElement;
-    const activeTheme = theme === "system" ? getSystemTheme() : theme;
 
     root.classList.remove("light", "dark");
-    root.classList.add(activeTheme);
+
+    if (theme === "system") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+
+      root.classList.add(systemTheme);
+      return;
+    }
+
+    root.classList.add(theme);
   }, [theme]);
 
-  const value = useMemo(
-    () => ({
-      setTheme: (nextTheme: Theme): void => {
-        localStorage.setItem(storageKey, nextTheme);
-        setTheme(nextTheme);
-      },
-      theme,
-    }),
-    [storageKey, theme],
-  );
+  const value = {
+    setTheme: (nextTheme: Theme) => {
+      localStorage.setItem(storageKey, nextTheme);
+      setTheme(nextTheme);
+    },
+    theme,
+  };
 
-  return <ThemeProviderContext.Provider value={value}>{children}</ThemeProviderContext.Provider>;
+  return (
+    <ThemeProviderContext.Provider {...props} value={value}>
+      {children}
+    </ThemeProviderContext.Provider>
+  );
 };
 
 export const useTheme = (): ThemeProviderState => {
@@ -64,3 +72,5 @@ export const useTheme = (): ThemeProviderState => {
 
   return context;
 };
+
+export { ThemeProvider };
